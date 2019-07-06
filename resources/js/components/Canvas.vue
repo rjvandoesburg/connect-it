@@ -66,6 +66,8 @@
         mounted() {
             this.canvas = this.$refs.canvas;
 
+            this.$refs.nodes[0].linkNode(this.$refs.nodes[1]);
+
             this.ctx = this.canvas.getContext('2d');
             this.shapes = [];
             this.draggingShape = null;

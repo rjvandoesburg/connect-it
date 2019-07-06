@@ -23,6 +23,8 @@
                 height: 50,
                 isDragging: false,
                 fill: null,
+
+                linkedNodes: [],
             }
         },
 
@@ -39,10 +41,15 @@
             },
 
             draw(canvas) {
-                if (! this.isVisible(canvas)) {
-                    return;
-                }
+                // Draw the links
+                this.drawLinks(canvas);
 
+                if (this.isVisible(canvas)) {
+                    this.drawElement(canvas);
+                }
+            },
+
+            drawElement(canvas) {
                 canvas.ctx.fillStyle = this.fill;
 
                 canvas.ctx.fillRect(
@@ -53,6 +60,19 @@
                 )
             },
 
+            drawLinks(canvas) {
+                if (this.linkedNodes.length === 0) {
+                    return;
+                }
+
+                _.forEach(this.linkedNodes, node => {
+                    canvas.ctx.beginPath();
+                    canvas.ctx.moveTo(this.centerX, this.centerY);
+                    canvas.ctx.lineTo(node.centerX, node.centerY);
+                    canvas.ctx.stroke();
+                });
+            },
+
             isVisible(canvas) {
                 let xMin = this.x - canvas.panX;
                 let xMax = this.x + this.width - canvas.panX;
@@ -61,7 +81,21 @@
                 
                 return xMax > 0 && xMin < canvas.width
                 && yMax > 0 && yMin < canvas.height
+            },
+
+            linkNode(node) {
+                this.linkedNodes.push(node);
             }
+        },
+
+        computed: {
+            centerX() {
+                return this.x + this.width / 2;
+            },
+
+            centerY() {
+                return this.y + this.height / 2;
+            },
         },
     }
 </script>
