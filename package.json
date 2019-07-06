@@ -23,6 +23,7 @@
         "vue": "^2.5.17"
     },
     "dependencies": {
+        "interactjs": "^1.4.11",
         "tailwindcss": "^1.0.4",
         "vue-template-compiler": "^2.6.10"
     }
