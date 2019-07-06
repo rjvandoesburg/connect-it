@@ -55,10 +55,10 @@ class Canvas {
         let my = event.clientY - this.offsetY;
 
         if (this.mouseHeld) {
-            if (this.draggingShape !== null) {
+            if (this.selectedNode !== null) {
                 // dragging shape move
-                this.draggingShape.x = mx - this.draggingShape.width * 0.5 + this.panX;
-                this.draggingShape.y = my - this.draggingShape.height * 0.5 + this.panY;
+                this.selectedNode.x = mx - this.selectedNode.width * 0.5 + this.panX;
+                this.selectedNode.y = my - this.selectedNode.height * 0.5 + this.panY;
             } else {
                 this.panX += this.startX - mx;
                 this.panY += this.startY - my;
@@ -77,8 +77,8 @@ class Canvas {
 
         this.mouseHeld = false;
 
-        if (this.draggingShape !== null) {
-            this.draggingShape.isDragging = false;
+        if (this.selectedNode !== null) {
+            this.selectedNode.isDragging = false;
             this.draggingShape = null;
             window.requestAnimationFrame(this.draw);
         }

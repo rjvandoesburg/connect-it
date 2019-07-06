@@ -67,8 +67,8 @@
 
                 _.forEach(this.linkedNodes, node => {
                     canvas.ctx.beginPath();
-                    canvas.ctx.moveTo(this.centerX, this.centerY);
-                    canvas.ctx.lineTo(node.centerX, node.centerY);
+                    canvas.ctx.moveTo(this.centerX - canvas.panX, this.centerY - canvas.panY);
+                    canvas.ctx.lineTo(node.centerX - canvas.panX, node.centerY - canvas.panY);
                     canvas.ctx.stroke();
                 });
             },

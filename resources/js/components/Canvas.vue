@@ -28,11 +28,17 @@
                 offsetX: null,
                 offsetY: null,
                 shapes: [],
-                draggingShape: null,
+                selectedNode: null,
 
                 panX: 0,
                 panY: 0,
                 mouseHeld: false,
+
+                scale: 1,
+                currentScale: 1,
+                adjustScale: false,
+
+                didDrag: false,
 
                 modules: [
                     {
@@ -70,11 +76,13 @@
 
             this.ctx = this.canvas.getContext('2d');
             this.shapes = [];
-            this.draggingShape = null;
+            this.selectedNode = null;
 
             window.onmousedown = this.mouseDown;
             window.onmouseup = this.mouseUp;
             window.onmousemove = this.mouseMove;
+
+            this.canvas.onwheel = this.onScroll;
 
             this.resizeCanvas();
         },
@@ -90,11 +98,15 @@
                 this.offsetX = this.bb.left;
                 this.offsetY = this.bb.top;
 
-
                 this.draw();
             },
 
             clear() {
+                if (this.adjustScale) {
+                    this.ctx.scale(this.scale, this.scale);
+                    this.adjustScale = false;
+                }
+
                 this.ctx.clearRect(0, 0, this.width, this.height);
             },
 
@@ -107,7 +119,7 @@
                 _.forEach(this.$refs.nodes, node => {
                     if (node.isWithin(this.startX + this.panX, this.startY + this.panY)) {
                         node.isDragging = true;
-                        this.draggingShape = node;
+                        this.selectedNode = node;
 
                         requestAnimationFrame(this.draw);
                     }
@@ -119,20 +131,21 @@
                 let my = event.clientY - this.offsetY;
 
                 if (this.mouseHeld) {
-                    if (this.draggingShape !== null) {
+                    this.didDrag = true;
+                    if (this.selectedNode !== null) {
                         // dragging shape move
-                        this.draggingShape.x = mx - this.draggingShape.width * 0.5 + this.panX;
-                        this.draggingShape.y = my - this.draggingShape.height * 0.5 + this.panY;
+                        this.selectedNode.x = mx - this.selectedNode.width * 0.5 + this.panX;
+                        this.selectedNode.y = my - this.selectedNode.height * 0.5 + this.panY;
                     } else {
                         this.panX += this.startX - mx;
                         this.panY += this.startY - my;
                     }
+
+                    requestAnimationFrame(this.draw);
                 }
 
                 this.startX = mx;
                 this.startY = my;
-
-                requestAnimationFrame(this.draw);
             },
 
             mouseUp(event) {
@@ -141,11 +154,16 @@
 
                 this.mouseHeld = false;
 
-                if (this.draggingShape !== null) {
-                    this.draggingShape.isDragging = false;
-                    this.draggingShape = null;
+                if (this.selectedNode !== null) {
+                    if (! this.didDrag) {
+                        console.log('handle node click');
+                    }
+                    this.selectedNode.isDragging = false;
+                    this.selectedNode = null;
                     requestAnimationFrame(this.draw);
                 }
+
+                this.didDrag = false;
             },
 
             draw() {
@@ -154,10 +172,27 @@
                     node.draw(this);
                 })
             },
+
+            onScroll(event) {
+                return;
+                // TODO: Implement scrolling
+                // The scaling should only apply to the next render
+                // afterwards the new 'scale' should be 1 because we did not scroll
+                event.preventDefault();
+                // some how alter the scale
+
+                this.adjustScale = true;
+
+                this.scale = this.scale + event.deltaY * -0.01;
+
+                // Restrict scale
+                this.scale = Math.min(Math.max(.9, this.scale), 1);
+                console.log(this.scale);
+                //this.currentScale = this.scale;
+
+
+                requestAnimationFrame(this.draw);
+            },
         }
     }
 </script>
-
-<style scoped>
-
-</style>
